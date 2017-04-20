@@ -27,11 +27,9 @@ function! SyntaxCheckers_python_coala_IsAvailable() dict " {{{1
     try
     
         let version_output = syntastic#util#system(self.getExecEscaped() . ' --version 2>/dev/null')
-        let coala_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=coala[-0-9]*\>''' )[0]
-        let parsed_ver = syntastic#util#parseVersion(substitute(coala_version, '\v^\S+\s+', '', ''))
-        call self.setVersion(parsed_ver)
+        call self.setVersion(version_output)
 
-        let s:coala_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
+        let s:coala_new = syntastic#util#versionIsAtLeast(version_output, [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/
         call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
         call syntastic#log#error("checker python/coala: can't parse version string (abnormal termination?)")
