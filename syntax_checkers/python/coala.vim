@@ -19,6 +19,29 @@ set cpo&vim
 
 let s:coala_new = -1
 
+function! SyntaxCheckers_python_coala_IsAvailable() dict " {{{1
+    if !executable(self.getExec())
+        return 0
+    endif
+
+    try
+        " Lets see if this works for us.
+
+        let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
+        let coala_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=coala[-0-9]*\>''' )[0]
+        let parsed_ver = syntastic#util#parseVersion(substitute(coala_version, '\v^\S+\s+', '', ''))
+        call self.setVersion(parsed_ver)
+
+        let s:coala_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
+    catch /\m^Vim\%((\a\+)\)\=:E684/
+        call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
+        call syntastic#log#error("checker python/coala: can't parse version string (abnormal termination?)")
+        let s:coala_new = -1
+    endtry
+
+    return s:coala_new >= 0
+endfunction " }}}1
+
 function! SyntaxCheckers_python_coala_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
         \ 'args_after': (s:coala_new ?
