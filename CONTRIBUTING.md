@@ -1,9 +1,9 @@
 # CONTRIBUTING
 - - -
-1\. [Bug reports / GitHub issues](#bugreps)  
-2\. [Submitting a patch](#patches)  
-3\. [General style notes](#generalstyle)  
-4\. [Syntax checker notes](#checkerstyle)  
+1\. [Bug reports / GitHub issues](#bugreps)
+2\. [Submitting a patch](#patches)
+3\. [General style notes](#generalstyle)
+4\. [Syntax checker notes](#checkerstyle)
 - - -
 
 <a name="bugreps"></a>
