@@ -5,44 +5,45 @@
 "
 "============================================================================
 
-if exists('g:loaded_syntastic_coala')
+if exists('g:loaded_syntastic_python_pylint_checker')
     finish
 endif
-let g:loaded_syntastic_coala = 1
+let g:loaded_syntastic_python_pylint_checker = 1
 
-if !exists('g:syntastic_coala')
-    let g:syntastic_coala = 1
+if !exists('g:syntastic_python_pylint_sort')
+    let g:syntastic_python_pylint_sort = 1
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:coala_new = -1
+let s:pylint_new = -1
 
-function! SyntaxCheckers_coala_IsAvailable() dict " {{{1
+function! SyntaxCheckers_python_pylint_IsAvailable() dict " {{{1
     if !executable(self.getExec())
         return 0
     endif
-    
+
     try
+    
         let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
-        let coala_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=coala[-0-9]*\>''' )[0]
-        let parsed_ver = syntastic#util#parseVersion(substitute(coala_version, '\v^\S+\s+', '', ''))
+        let pylint_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=pylint[-0-9]*\>''' )[0]
+        let parsed_ver = syntastic#util#parseVersion(substitute(pylint_version, '\v^\S+\s+', '', ''))
         call self.setVersion(parsed_ver)
-        
-        let s:coala_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
+
+        let s:pylint_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
     catch /\m^Vim\%((\a\+)\)\=:E684/
         call syntastic#log#ndebug(g:_SYNTASTIC_DEBUG_LOCLIST, 'checker output:', split(version_output, "\n", 1))
-        call syntastic#log#error("coala: can't parse version string (abnormal termination?)")
-        let s:coala_new = -1
+        call syntastic#log#error("checker python/pylint: can't parse version string (abnormal termination?)")
+        let s:pylint_new = -1
     endtry
 
-    return s:coala_new >= 0
+    return s:pylint_new >= 0
 endfunction " }}}1
 
-function! SyntaxCheckers_python_coala_GetLocList() dict " {{{1
+function! SyntaxCheckers_python_pylint_GetLocList() dict " {{{1
     let makeprg = self.makeprgBuild({
-        \ 'args_after': (s:coala_new ?
+        \ 'args_after': (s:pylint_new ?
         \       '-f text --msg-template="{path}:{line}:{column}:{C}: [{symbol}] {msg}" -r n' :
         \       '-f parseable -r n -i y') })
 
@@ -53,13 +54,16 @@ function! SyntaxCheckers_python_coala_GetLocList() dict " {{{1
         \ '%-Z%p^%.%#,' .
         \ '%-G%.%#'
 
+    let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
+
     let loclist = SyntasticMake({
         \ 'makeprg': makeprg,
         \ 'errorformat': errorformat,
-        \ 'env': env })
-    
+        \ 'env': env,
+        \ 'returns': range(32) })
+
     for e in loclist
-        if !s:coala_new
+        if !s:pylint_new
             let e['type'] = e['text'][1]
         endif
 
@@ -80,8 +84,9 @@ endfunction " }}}1
 
 call g:SyntasticRegistry.CreateAndRegisterChecker({
     \ 'filetype': 'python',
-    \ 'name': 'coala'})
+    \ 'name': 'pylint' })
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
+
 " vim: set sw=4 sts=4 et fdm=marker:
