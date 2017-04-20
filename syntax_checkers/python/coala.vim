@@ -25,11 +25,8 @@ function! SyntaxCheckers_python_coala_IsAvailable() dict " {{{1
     endif
 
     try
-        " Lets see if this works for us.
-
         let version_output = syntastic#util#system(self.getExecEscaped() . ' --version')
-        let coala_version = filter( split(version_output, '\m, \=\|\n'), 'v:val =~# ''\m^\(python[-0-9]*-\|\.\)\=coala[-0-9]*\>''' )[0]
-        let parsed_ver = syntastic#util#parseVersion(substitute(coala_version, '\v^\S+\s+', '', ''))
+        let parsed_ver = syntastic#util#parseVersion(substitute(version_output, '\v^\S+\s+', '', ''))
         call self.setVersion(parsed_ver)
 
         let s:coala_new = syntastic#util#versionIsAtLeast(parsed_ver, [1])
