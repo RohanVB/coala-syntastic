@@ -13,10 +13,11 @@ let g:loaded_syntastic_python_coala_checker = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
+let g:syntastic_python_coala_fname = ""
 function! SyntaxCheckers_python_coala_GetLocList() dict
     let makeprg = self.makeprgBuild({})
 
-    let errorformat = '%W%f:%l:%c: %m'
+    let errorformat = 'L%l\\:%m'
 
     let env = syntastic#util#isRunningWindows() ? {} : { 'TERM': 'dumb' }
 
