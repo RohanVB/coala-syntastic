@@ -14,7 +14,6 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 let g:syntastic_python_coala_fname = ""
-let g:syntastic_python_coala_args = "--json"
 
 function! SyntaxCheckers_python_coala_GetLocList() dict
     let makeprg = self.makeprgBuild({})
